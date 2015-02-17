@@ -1,0 +1,8 @@
+"1.1
+
+loadplugins '\.(js|penta)$'
+group user
+map -count -modes=n,v deli <count>:open<Space>deli<Return>
+set defsearch=startpage-custom-search
+
+" vim: set ft=pentadactyl:

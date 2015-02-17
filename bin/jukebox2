@@ -1,0 +1,22 @@
+#!/bin/bash
+# Customize prompt for meaningful informations
+PS3="Select one station > "
+
+# Let the selection begins!
+select station in "RadioCinque" "Radio2" "Radio3" "Skyline" "Jazz24" "JRadio - Bass" "JRadio - Bebop" "JRadio - Cool" "JRadio - Gypsy" "JRadio - Hardbop" "JRadio - Sax" "JRadio - Trumpet" "Exit"; do
+    case $station in
+        "RadioCinque" ) mpv http://192.240.102.194:8660/live | while true; do grep title | sed -e "s/^/$(date -R) /" >> /home/utente/jukelog; done;;
+        "Radio2" ) mpv rtsp://live.media.rai.it/broadcast/radiodue.rm;;
+        "Radio3" ) mpv rtsp://live.media.rai.it/broadcast/radiotre.rm;;
+        "Skyline" ) mpv http://onair11.xdevel.com:8116;;
+        "Jazz24" ) mpv http://icy1.abacast.com/kplu-jazz24aac-64.m3u;;
+        "JRadio - Bass" ) mpv http://listen.jazzradio.com/public1/bassjazz.pls?66df60141515c135897db0f9;;
+        "JRadio - Bebop" ) mpv http://listen.jazzradio.com/public1/bebop.pls?66df60141515c135897db0f9;;
+        "JRadio - Cool" ) mpv http://listen.jazzradio.com/public1/cooljazz.pls?66df60141515c135897db0f9;;
+        "JRadio - Gypsy" ) mpv http://listen.jazzradio.com/public1/gypsyjazz.pls?66df60141515c135897db0f9;;
+        "JRadio - Hardbop" ) mpv http://listen.jazzradio.com/public1/hardbop.pls?66df60141515c135897db0f9;;
+        "JRadio - Sax" ) mpv http://listen.jazzradio.com/public1/saxophonejazz.pls?66df60141515c135897db0f9;;
+        "JRadio - Trumpet" ) mpv http://listen.jazzradio.com/public1/trumpetjazz.pls?66df60141515c135897db0f9;;
+        Exit ) exit;;
+    esac
+done

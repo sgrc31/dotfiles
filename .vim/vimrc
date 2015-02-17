@@ -1,0 +1,46 @@
+set nocompatible               " be iMproved
+"Setting up Vundle {
+	filetype off                   " required!
+	set rtp+=~/.vim/bundle/vundle/
+	call vundle#rc()
+	" let Vundle manage Vundle
+	" required! 
+	Bundle 'gmarik/vundle'
+"}
+
+" Bundles {
+	Bundle 'kien/ctrlp.vim'
+	Bundle 'scrooloose/nerdtree'
+	Bundle 'tpope/vim-surround'
+	Bundle 'altercation/vim-colors-solarized'
+    "Bundle 'bling/vim-airline'
+    Bundle 'SirVer/ultisnips'
+    Bundle 'honza/vim-snippets'
+    Bundle 'Shougo/neocomplete.vim'
+    "Bundle 'rbonvall/snipmate-snippets-bib'
+    "Bundle 'Valloric/YouCompleteMe'
+"}
+filetype plugin indent on     " required!
+
+"Settings per i tab, settati a 4
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+"Keybinds per Ultisnips. Non usare TAB se installo YouCompleteMe
+let g:UltiSnipsExpandTrigger="<tab>"
+"let g:UltiSnipsListSnippets="<c-tab>" || Non ho la minima idea di cosa faccia
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+"let g:UltiSnipsJumpBackwardTrigger="<s-tab>" || Questo sembra non funzionare
+
+"Settings vari
+set t_Co=16   "richiesto per far si che vim solarized vaba bene anche in tmux (senza grassetto). Consigliato dall`autore stesso https://stackoverflow.com/questions/5560658/ubuntu-vim-and-the-solarized-color-palette
+set laststatus=2
+set mouse=a
+syntax enable
+set background=dark
+colorscheme solarized
+set number
+
+

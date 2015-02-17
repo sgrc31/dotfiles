@@ -1,0 +1,10 @@
+URxvt.background:        #000000
+URxvt.foreground:        #1ab916
+URxvt.scrollBar:        false
+URxvt.font:                xft:DejaVu Sans Mono:pixelsize=13
+URxvt.visualBell:        true
+URxvt.urgentOnBell:         true
+#Link clickabili
+URxvt.perl-ext-common: default,matcher
+URxvt.urlLauncher: /usr/bin/iceweasel
+URxvt.matcher.button: 1 

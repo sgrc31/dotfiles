@@ -1,0 +1,11 @@
+/*
+
+!.vim
+!.irssi
+!bin/
+
+#Per mettere subdirectories, come indicato https://stackoverflow.com/questions/5533050/gitignore-exclude-folder-but-include-specific-subfolder
+!.config/
+.config/*
+!.config/i3
+!.config/i3status
