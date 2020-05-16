@@ -1,0 +1,5 @@
+[user]
+	name = Simone Guercio
+	email = s.guercio@gmail.com
+[core]
+	editor = emacsclient -nw
