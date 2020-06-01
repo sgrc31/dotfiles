@@ -1,48 +1,64 @@
- #+begin_src emacs-lisp
-   ;; -*- lexical-binding: t -*-
-   #+end_src
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t -*-
+#+end_src
 
-** Package Archives
+* Intro
+Second attempt at a literate emacs configuration. The core parts are taken from [[https://github.com/the-programmers-hangout/emacs][The programmers hangout config file]], with some addition (mostly graphical ones) from [[https://github.com/hlissner/doom-emacs][Doom Emacs]] 
 
-   All of the third-party packages we’re going to reference are available through [[https://melpa.org/][MELPA]]. This is your one stop shop for finding and installing Emacs addons. Run =M-x list-packages= to bring up an interactive searchable list. When the point is over a package line, hit =i= to mark the package for installation, then =x= to install all marked packages. If packages have updates, mark them all with `U`.
 
-   #+begin_src emacs-lisp
-   (require 'package)
-   (setq package-enable-at-startup nil)
-   #+end_src
+* Package Archives
 
-   Set up all the archive sources to pull from packages from.
+  All of the third-party packages we’re going to reference are available through [[https://melpa.org/][MELPA]]. This is your one stop shop for finding and installing Emacs addons. Run =M-x list-packages= to bring up an interactive searchable list. When the point is over a package line, hit =i= to mark the package for installation, then =x= to install all marked packages. If packages have updates, mark them all with `U`.
 
-   #+begin_src emacs-lisp
-   (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
-                            ("gnu" . "http://elpa.gnu.org/packages/")
-                            ("org" . "https://orgmode.org/elpa/")))
+  #+begin_src emacs-lisp
+  (require 'package)
+  (setq package-enable-at-startup nil)
+  #+end_src
 
-   (package-initialize)
-   #+end_src
+  Set up all the archive sources to pull from packages from.
 
-** Package Installers
+  #+begin_src emacs-lisp
+  (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
+                           ("gnu" . "http://elpa.gnu.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")))
 
-   The primary tool we use to configure our Emacs packages, aptly called [[https://jwiegley.github.io/use-package/][use-package]], automatically downloads packages from a package source, speeds up startup by deferring package loading until necessary, and helps keep your configuration tidy by providing a place to combine package-specific settings and other mode and action hooks.
+  (package-initialize)
+  #+end_src
 
-   #+begin_src emacs-lisp
-   (unless (package-installed-p 'use-package)
-     (package-refresh-contents)
-     (package-install 'use-package))
 
-   (eval-when-compile
-     (require 'use-package))
+* Package Installers
 
-   ;; Yes, it's a bit meta...
-   (use-package use-package
-     :config
-     (setq-default use-package-always-defer t
-                   use-package-always-demand nil
-                   use-package-always-ensure t
-                   use-package-verbose t))
+  The primary tool we use to configure our Emacs packages, aptly called [[https://jwiegley.github.io/use-package/][use-package]], automatically downloads packages from a package source, speeds up startup by deferring package loading until necessary, and helps keep your configuration tidy by providing a place to combine package-specific settings and other mode and action hooks.
 
-   (setq-default byte-compile-warnings nil)
-   #+end_src
+  #+begin_src emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (eval-when-compile
+    (require 'use-package))
+
+  ;; Yes, it's a bit meta...
+  (use-package use-package
+    :config
+    (setq-default use-package-always-defer t
+                  use-package-always-demand nil
+                  use-package-always-ensure t
+                  use-package-verbose t))
+
+  (setq-default byte-compile-warnings nil)
+  #+end_src
+
+
+* Ivy
+Replace Ido (the default) with ivy completion mode, for a faster, leaner, more customizable alternative
+
+#+begin_src emacs-lisp
+(use-package ivy
+  :demand
+  :config
+  (ivy-mode 1))
+#+end_src
 
 
 * Projects
@@ -71,6 +87,7 @@
      (append
       '("cmake_install.cmake")
       projectile-globally-ignored-files))
+    (setq projectile-completion-system 'ivy)
     :custom
     (projectile-project-search-path '("~/lab/"))
     (projectile-enable-caching t)
@@ -81,6 +98,11 @@
   #+end_src
 
 
+** Customizations
+- added default project search path
+- added integration with Ivy
+
+
 * Magit
 
   [[https://github.com/magit/magit][Magit]] is a Git interface, just like you have in many IDEs and text editors, but combining that with all the power of using Git from the command line.
@@ -88,6 +110,11 @@
   #+begin_src emacs-lisp
   (use-package magit)
   #+end_src
+
+
+** TODO Forges integration
+Using the forge plugin integrates magit with the most popular git forges out there (such as Github, Gitlab and so on). It might be worth using it.
+
 
 * Key bindings
 
@@ -115,7 +142,7 @@
   #+END_SRC
 
 
-** Documentation
+* Documentation
 
   When the point is overlapping with a function call, eldoc shows the function arguments in the echo area.
 
@@ -171,24 +198,7 @@
     (lsp-treemacs-sync-mode 1))
   #+END_SRC
 
-
-* Code completion
-
-  Company is the primary package that is used for code completion, it follows a frontend/backend system. The package =company= is the frontend, it will query a certain backend based on what code you are editing, such as one provided by an active language server.
-
-  #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :hook (after-init . global-company-mode)
-    :custom
-    (company-tooltip-align-annotations t))
-
-  (use-package company-lsp
-    :after (company lsp-mode)
-    :custom
-    (company-lsp-cache-candidates t))
-  #+END_SRC
-
-** Python
+* Python
 
    Unfortunately the Python package situation is a little confusing. There are a few older separate packages that provide a Python major mode, but we prefer the built-in one and avoid downloading a third-party one by not ensuring it. This allows us to have =use-package= configure Python mode without downloading anything.
 
@@ -212,7 +222,90 @@
                             (lsp))))
    #+END_SRC
 
-* mie vecchie configurazioni
+
+* Code completion
+
+  Company is the primary package that is used for code completion, it follows a frontend/backend system. The package =company= is the frontend, it will query a certain backend based on what code you are editing, such as one provided by an active language server.
+
+  #+BEGIN_SRC emacs-lisp
+  (use-package company
+    :hook (after-init . global-company-mode)
+    :custom
+    (company-tooltip-align-annotations t))
+
+  (use-package company-lsp
+    :after (company lsp-mode)
+    :custom
+    (company-lsp-cache-candidates t))
+  #+END_SRC
+
+* Ace window
+Ace window provide a quick way to select wich buffer to edit. I chose to override the standard C-x o keybind and switched the standard select keys to Colemak's homerow.
+#+begin_src emacs-lisp
+(use-package ace-window
+  :config
+  (global-set-key (kbd "C-x o") 'ace-window)
+  (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o ?h)))
+#+end_src
+
+
+** TODO Change keybins using :bind and :map
+As done in other packages (avy, treemacs)
+
+
+* Avy
+Avy is a great tool to move faster inside a buffer
+#+begin_src emacs-lisp
+(use-package avy
+  :bind (:map global-map
+              ("C-;" . avy-goto-char-2)))
+#+end_src
+
+
+* All the icon
+Required by Doom theme and modeline
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+#+end_src
+
+
+** TODO Set loading before requirements
+Or set the requirements to load only after this package
+
+
+* Doom theme
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :demand 
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ;;(doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+  (doom-themes-treemacs-config)
+  
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+#+end_src
+
+
+* Doom modeline
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
+#+end_src
+
+
+* Misc
 ** Tramp
 #+BEGIN_SRC emacs-lisp
 (setq tramp-default-method "ssh")
@@ -221,18 +314,10 @@
 ** Niente toolbars
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode -1)
-(scroll-bar-mode -1)
+;(scroll-bar-mode -1)
 #+END_SRC
 
 ** Niente splash screen
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-screen t)
 #+END_SRC
-
-** Ace window
-#+begin_src emacs-lisp
-(use-package ace-window
-  :config
-  (global-set-key (kbd "C-x o") 'ace-window)
-  (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o ?h)))
-#+end_src
