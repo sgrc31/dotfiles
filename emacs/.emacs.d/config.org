@@ -14,6 +14,7 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   (when (file-exists-p custom-file) (load custom-file 'noerror))
   #+end_src
 
+
 * Package Archives
 
   All of the third-party packages we’re going to reference are available through [[https://melpa.org/][MELPA]]. This is your one stop shop for finding and installing Emacs addons. Run =M-x list-packages= to bring up an interactive searchable list. When the point is over a package line, hit =i= to mark the package for installation, then =x= to install all marked packages. If packages have updates, mark them all with `U`.
@@ -272,6 +273,14 @@ Avy is a great tool to move faster inside a buffer
 #+end_src
 
 
+* Expand region
+  Nice little tool that increases the selected region by semantic units. [[https://github.com/magnars/expand-region.el][Github repo]]
+#+begin_src emacs-lisp
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+#+end_src
+
 * All the icon
 Required by Doom theme and modeline
 #+begin_src emacs-lisp
@@ -322,12 +331,21 @@ Or set the requirements to load only after this package
 #+END_SRC
 
 ** Niente toolbars
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (tool-bar-mode -1)
 ;(scroll-bar-mode -1)
-#+END_SRC
+#+end_src
 
 ** Niente splash screen
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-screen t)
 #+END_SRC
+
+** Time and date in modeline
+#+begin_src emacs-lisp
+(setq display-time-day-and-date t)
+(setq display-time-24hr-format t)
+(setq display-time-format "%H:%M %d/%m/%y")
+(setq display-time-default-load-average nil)
+(display-time-mode 1)
+#+end_src
