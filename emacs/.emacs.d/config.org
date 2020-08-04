@@ -6,6 +6,14 @@
 Second attempt at a literate emacs configuration. The core parts are taken from [[https://github.com/the-programmers-hangout/emacs][The programmers hangout config file]], with some addition (mostly graphical ones) from [[https://github.com/hlissner/doom-emacs][Doom Emacs]] 
 
 
+* Keep customize settings in their custom file
+  I like to have my init.el clean, and save all the variables added by Customize in another file
+  
+  #+begin_src emacs-lisp
+  (setq custom-file (concat user-emacs-directory "custom.el"))
+  (when (file-exists-p custom-file) (load custom-file 'noerror))
+  #+end_src
+
 * Package Archives
 
   All of the third-party packages we’re going to reference are available through [[https://melpa.org/][MELPA]]. This is your one stop shop for finding and installing Emacs addons. Run =M-x list-packages= to bring up an interactive searchable list. When the point is over a package line, hit =i= to mark the package for installation, then =x= to install all marked packages. If packages have updates, mark them all with `U`.
