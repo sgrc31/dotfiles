@@ -35,7 +35,7 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   #+end_src
 
   #+RESULTS:
-
+1
 
 * Package Installers
 
@@ -323,6 +323,16 @@ Or set the requirements to load only after this package
   :init (doom-modeline-mode 1))
 #+end_src
 
+
+* Org mode
+  Just something basic, straight outta the org manual, but in use-package syntax
+#+begin_src emacs-lisp
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c c" . 'org-capture)
+         ("C-c l" . 'org-store-link)
+         ("C-c a" . 'org-agenda)))
+#+end_src
 
 * Misc
 ** Tramp
