@@ -173,7 +173,8 @@ Using the forge plugin integrates magit with the most popular git forges out the
     :custom
     (lsp-auto-guess-root t)
     (lsp-log-io t)
-    (lsp-prefer-flymake nil))
+    (lsp-prefer-flymake nil)
+    (lsp-enable-snippet t))
   #+END_SRC
 
   This package enhances the user interface, providing pop-up windows with documentation and visual indicators.
@@ -182,7 +183,7 @@ Using the forge plugin integrates magit with the most popular git forges out the
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
     :custom
-    (lsp-ui-doc-delay 3.0)
+    (lsp-ui-doc-delay 1.0)
     (lsp-ui-doc-include-signature t)
     (lsp-ui-flycheck-enable t)
     (lsp-ui-peek-always-show t))
@@ -233,6 +234,14 @@ Using the forge plugin integrates magit with the most popular git forges out the
                             (lsp))))
    #+END_SRC
 
+** Virtual environments
+   test pyvenv
+   #+begin_src emacs-lisp
+   (use-package pyvenv
+  :ensure t
+  :config
+  (pyvenv-mode 1))
+   #+end_src
 
 * Code completion
 
@@ -250,6 +259,13 @@ Using the forge plugin integrates magit with the most popular git forges out the
     (company-lsp-cache-candidates t))
   #+END_SRC
 
+* YASnippets
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+#+end_src
 * Ace window
 Ace window provide a quick way to select wich buffer to edit. I chose to override the standard C-x o keybind and switched the standard select keys to Colemak's homerow.
 #+begin_src emacs-lisp
@@ -272,6 +288,17 @@ Avy is a great tool to move faster inside a buffer
               ("C-;" . avy-goto-char-2)))
 #+end_src
 
+
+* PDF
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :ensure t
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page)
+  (setq pdf-annot-activate-created-annotations t))
+#+end_src
 
 * Expand region
   Nice little tool that increases the selected region by semantic units. [[https://github.com/magnars/expand-region.el][Github repo]]
