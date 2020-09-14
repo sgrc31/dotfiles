@@ -140,12 +140,20 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+
+
 # reload the configuration file
-bindsym $mod+Shift+c reload
+#bindsym $mod+Shift+u reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
+#bindsym $mod+Shift+y restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+w exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+#bindsym $mod+Shift+ exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+mode "edit-conf" {
+     bindsym $mod+Shift+z reload
+     bindsym $mod+Shift+x restart
+     bindsym $mod+Shift+c exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+}
+bindsym $mod+Shift+x mode "edit-conf"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -187,7 +195,7 @@ bar {
 
 # autostart application
 exec --no-startup-id diodon &
-exec --no-startup-id xrandr --output DVI-0 --primary &
+exec --no-startup-id xrandr --output DVI-1 --primary &
 exec --no-startup-id udiskie -N --tray &
 
 
