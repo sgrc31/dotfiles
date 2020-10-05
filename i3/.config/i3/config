@@ -195,7 +195,7 @@ bar {
 
 # autostart application
 exec --no-startup-id diodon &
-exec --no-startup-id xrandr --output DVI-1 --primary &
+exec --no-startup-id xrandr --output DVI-1 --primary --output DVI-0 --right-of DVI-1 &
 exec --no-startup-id udiskie -N --tray &
 
 
