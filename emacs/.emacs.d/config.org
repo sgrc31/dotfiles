@@ -223,16 +223,6 @@ Using the forge plugin integrates magit with the most popular git forges out the
      (python-fill-docstring-style 'pep-257-nn))
    #+END_SRC
 
-   To use a language server with Python, there are two options:
-   - =pyls= from [[https://github.com/palantir/python-language-server][Palantir]]: =pip install python-language-server=, and =lsp-mode= will automatically pick it up
-   - =mspyls= from [[https://github.com/emacs-lsp/lsp-python-ms][Microsoft]]: see [[file:../config/python.org][here]].
-   #+BEGIN_SRC emacs-lisp
-   (use-package lsp-python-ms
-     :after lsp-mode
-     :hook (python-mode . (lambda ()
-                            (require 'lsp-python-ms)
-                            (lsp))))
-   #+END_SRC
 
 ** Virtual environments
    test pyvenv
