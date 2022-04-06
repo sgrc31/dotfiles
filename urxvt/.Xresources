@@ -121,7 +121,7 @@
 !URxvt.termName:         rxvt-unicode-256color
 URxvt.scrollBar:        false
 !URxvt.font:                xft:DejaVu Sans Mono:pixelsize=13:antialias=true
-URxvt.font:		xft:Hack:pixelsize=15:antialias=true, xft:DejaVu Sans:pixelsize=14
+URxvt.font: xft:Hack Nerd Font Mono:style=Regular:pixelsize=15:antialias=true, xft:Symbola:style=Regular:pixelsize=15:antialias=true, xft:Hack:pixelsize=15:antialias=true
 !URxvt.font:		xft:Inconsolata:pixelsize=13:antialias=true
 !URxvt.font:             xft:Dank Mono:pixelsize=12:antialias=true
 URxvt.visualBell:        true
