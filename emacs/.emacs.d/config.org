@@ -375,3 +375,28 @@ Or set the requirements to load only after this package
 (setq display-time-default-load-average nil)
 (display-time-mode 1)
 #+end_src
+
+** Font
+#+begin_src emacs-lisp
+;;Questo primo comando si applica solo per i frame già esistenti.
+;;Se provo a metterlo nell'init e lancio emacs come demone, quando apro il client
+;;ottengo frames con caratteri minuscoli
+;;(set-frame-font "Hack Nerd Font Mono:pixelsize=15:foundry=SRC:weight=normal:slant=normal:width=normal:spacing=100:scalable=true" nil t)
+
+;;quindi in giro ho trovato questo primo suggerimento, da questo link:
+;;https://emacs.stackexchange.com/questions/52063/emacsclient-gui-has-small-fonts
+;;ma non va, perché la variabile default-frame-list è vuota al momento della valutazione
+;;(add-to-list 'default-frame-list '(font . "Hack Nerd Font Mono:pixelsize=15:foundry=SRC:weight=normal:slant=normal:width=normal:spacing=100:scalable=true"))
+
+;;provo questo, da:
+;;https://emacs.stackexchange.com/questions/35820/opening-emacsclient-n-c-opens-a-small-frame-with-small-fonts
+;;(setq default-frame-alist '(font . "Hack Nerd Font Mono:pixelsize=15:foundry=SRC:weight=normal:slant=normal:width=normal:spacing=100:scalable=true")
+;; però non va.
+
+;;leggendo meglio questo scambio:
+;;https://emacs.stackexchange.com/questions/59791/font-and-frame-configuration-in-daemon-mode
+;; mi pare di capire che la soluzione sia nell'ultimo hook server-after-make-frame-hook
+;; ma la cosa non verrebbe eseguita nelle sessioni stand alone GUI di emacs. Insomma, mi
+;; serve più emacs-fu. Per il momento mi limito a settare il tutto a mano ogni 
+;;volta che apro il client, con il primo comando qui testato.
+#+end_src
