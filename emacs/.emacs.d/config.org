@@ -151,8 +151,6 @@ Using the forge plugin integrates magit with the most popular git forges out the
     :custom
     (flycheck-check-syntax-automatically '(save mode-enabled)))
   #+END_SRC
-
-
 * Documentation
 
   When the point is overlapping with a function call, eldoc shows the function arguments in the echo area.
@@ -260,9 +258,10 @@ Using the forge plugin integrates magit with the most popular git forges out the
 Ace window provide a quick way to select wich buffer to edit. I chose to override the standard C-x o keybind and switched the standard select keys to Colemak's homerow.
 #+begin_src emacs-lisp
 (use-package ace-window
-  :config
-  (global-set-key (kbd "C-x o") 'ace-window)
-  (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o ?h)))
+  :ensure t
+  :config (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o ?h))
+  :bind ("C-x o" . ace-window)
+)
 #+end_src
 
 
