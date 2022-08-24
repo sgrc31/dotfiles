@@ -236,15 +236,12 @@ Using the forge plugin integrates magit with the most popular git forges out the
   Company is the primary package that is used for code completion, it follows a frontend/backend system. The package =company= is the frontend, it will query a certain backend based on what code you are editing, such as one provided by an active language server.
 
   #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :hook (after-init . global-company-mode)
-    :custom
-    (company-tooltip-align-annotations t))
-
-  (use-package company-lsp
-    :after (company lsp-mode)
-    :custom
-    (company-lsp-cache-candidates t))
+    (use-package company
+      :hook (after-init . global-company-mode)
+      :config
+      (setq lsp-completion-provider :capf)
+      :custom
+      (company-tooltip-align-annotations t))
   #+END_SRC
 
 * YASnippets
