@@ -241,6 +241,8 @@ Using the forge plugin integrates magit with the most popular git forges out the
       :config
       (setq lsp-completion-provider :capf)
       :custom
+      (company-minimum-prefix-length 1)
+      (company-idle-delay 0.3)
       (company-tooltip-align-annotations t))
   #+END_SRC
 
