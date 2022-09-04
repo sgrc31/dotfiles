@@ -34,8 +34,6 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   (package-initialize)
   #+end_src
 
-  #+RESULTS:
-1
 
 * Package Installers
 
@@ -241,6 +239,8 @@ Using the forge plugin integrates magit with the most popular git forges out the
       :config
       (setq lsp-completion-provider :capf)
       :custom
+      (company-minimum-prefix-length 1)
+      (company-idle-delay 0.3)
       (company-tooltip-align-annotations t))
   #+END_SRC
 
@@ -345,6 +345,20 @@ Or set the requirements to load only after this package
   :bind (("C-c c" . 'org-capture)
          ("C-c l" . 'org-store-link)
          ("C-c a" . 'org-agenda)))
+#+end_src
+
+* Org Roam
+#+begin_src emacs-lisp
+      (use-package org-roam
+	:ensure t
+	:custom
+	(org-roam-directory "~/org/org-roam")
+	(org-roam-complete-link-at-point t)
+	:bind (("C-c n l" . org-roam-buffer-toggle)
+	       ("C-c n f" . org-roam-node-find)
+	       ("C-c n i" . org-roam-node-insert))
+	:config
+	(org-roam-setup))
 #+end_src
 
 * Misc
