@@ -175,13 +175,14 @@ Using the forge plugin integrates magit with the most popular git forges out the
   This package enhances the user interface, providing pop-up windows with documentation and visual indicators.
 
   #+BEGIN_SRC emacs-lisp
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-doc-delay 1.0)
-    (lsp-ui-doc-include-signature t)
-    (lsp-ui-flycheck-enable t)
-    (lsp-ui-peek-always-show t))
+      (use-package lsp-ui
+	:hook (lsp-mode . lsp-ui-mode)
+	:custom
+	(lsp-ui-doc-delay 1.0)
+	(lsp-ui-doc-include-signature t)
+	(lsp-ui-flycheck-enable t)
+	(lsp-ui-peek-always-show t)
+	(lsp-ui-sideline-diagnostic-max-lines 2))
   #+END_SRC
 
   Analogous to LSP is the [[https://microsoft.github.io/debug-adapter-protocol/][debug adapter protocol]]. We use [[https://github.com/emacs-lsp/lsp-treemacs][treemacs]] for IDE-like display of errors.
