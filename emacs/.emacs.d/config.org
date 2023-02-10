@@ -419,3 +419,4 @@ Or set the requirements to load only after this package
 ;; serve più emacs-fu. Per il momento mi limito a settare il tutto a mano ogni 
 ;;volta che apro il client, con il primo comando qui testato.
 #+end_src
+(set-frame-font "Hack Nerd Font Mono-20")
