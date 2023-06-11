@@ -143,10 +143,10 @@ Using the forge plugin integrates magit with the most popular git forges out the
   A detailed comparison is at https://www.flycheck.org/en/latest/user/flycheck-versus-flymake.html. We choose to use flycheck due to the sheer number of extensions written for it; pick your favorite language linter, and there’s probably a flycheck extension for it. Note that [[https://www.flycheck.org/en/latest/user/installation.html#windows-support][Windows isn't supported]].
 
   #+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :hook (after-init . global-flycheck-mode)
-    :custom
-    (flycheck-check-syntax-automatically '(save mode-enabled)))
+      (use-package flycheck
+	:hook (after-init . global-flycheck-mode)
+	:custom
+	(setq flycheck-check-syntax-automatically '(mode-enabled save)))
   #+END_SRC
 * Documentation
 
