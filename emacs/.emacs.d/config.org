@@ -352,6 +352,9 @@ Or set the requirements to load only after this package
     :ensure t
     :init
     (setq org-roam-v2-ack t)
+    (setq org-roam-node-display-template
+      (concat "${title:*} "
+              (propertize "${tags:10}" 'face 'org-tag)))
     :custom
     (org-roam-directory "~/org/org-roam")
     (org-roam-db-location "~/.emacs.d/org-roam.db")
