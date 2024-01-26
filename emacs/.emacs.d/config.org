@@ -244,6 +244,15 @@ Using the forge plugin integrates magit with the most popular git forges out the
       (company-tooltip-align-annotations t))
   #+END_SRC
 
+* Dart / Flutter
+  Configurazione per dart e Flutter, scritta da me un po' a cazzo di cane
+   #+BEGIN_SRC emacs-lisp
+     (use-package dart-mode
+       :ensure t
+       :hook (dart-mode . lsp))
+   #+END_SRC
+   
+
 * YASnippets
 #+begin_src emacs-lisp
 (use-package yasnippet
