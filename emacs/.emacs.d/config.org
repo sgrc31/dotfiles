@@ -437,4 +437,20 @@ Or set the requirements to load only after this package
 ;; serve più emacs-fu. Per il momento mi limito a settare il tutto a mano ogni 
 ;;volta che apro il client, con il primo comando qui testato.
 #+end_src
-(set-frame-font "Hack Nerd Font Mono-20")
+
+Questo comando funziona che è una meraviglia, ma non se lancio emacs da demone
+#+begin_src emacs-lisp
+(set-frame-font "Hack Nerd Font Mono-11")
+#+end_src
+
+Anche questo sembra andare, sempre non se lancio da demone, ma pare sia una sintassi più vecchia e non più consigliata
+#+begin_src emacs-lisp
+;(set-face-attribute 'default nil :font "Hack Nerd Font Mono" :height 110)
+#+end_src
+
+Il tutto sembra succedere semplicemente perché entrambi i comandi hanno bisogno di un frame attivato per poter lavorare, e il demone non ne crea.
+La soluzione sembra essere quella di lanciarli in una funzione attivata alla prima creazione di un frame,
+con i vari hooks ‘after-make-frame-functions’, ‘before-make-frame-hook’, ‘server-after-make-frame-hook’.
+Trovo informazioni [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html][sul manuale]] e su [[https://emacs.stackexchange.com/questions/59791/font-and-frame-configuration-in-daemon-mode][stackoverflow]].
+
+Interessante lettura sui fonts e come usarne di diversi con diverse lingue [[http://idiocy.org/emacs-fonts-and-fontsets.html][link]]
