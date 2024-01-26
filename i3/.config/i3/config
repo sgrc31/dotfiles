@@ -24,7 +24,7 @@ font pango:monospace 9
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -i /home/sgrc31/.config/i3/wallpaper.png
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
@@ -194,15 +194,49 @@ bindsym $mod+KP_Subtract scratchpad show
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status
 	position top
 	tray_output primary
+	workspace_buttons yes
+	font pango:Hack Nerd Font 10
+	status_command py3status -i /home/sgrc31/.config/i3/py3status-modules -c /home/sgrc31/.config/i3/py3status.conf
+
+
+	colors {
+            separator #81a1c1
+            background #1f222d
+            statusline #81a1c1
+
+            #                   border  background text
+            focused_workspace  #1f222d #1f222d    #81a1c1
+            active_workspace   #1f222d #252936    #5e81ac
+            inactive_workspace #1f222d #1f222d    #4c566a
+            urgent_workspace   #1f222d #1f222d    #ee829f
+            binding_mode       #1f222d #81a1c1    #2e3440
+    }
 }
+
+
+##START THEMING WM
+
+    # Window color settings
+    # class                 border  backgr. text    indicator
+    #client.focused          #81a1c1 #81a1c1 #ffffff #81a1c1
+    #client.unfocused        #2e3440 #1f222d #888888 #1f222d
+    #client.focused_inactive #2e3440 #1f222d #888888 #1f222d
+    #client.placeholder      #2e3440 #1f222d #888888 #1f222d
+    #client.urgent           #900000 #900000 #ffffff #900000
+
+    #client.background       #242424
+
+    ##STOP THEMING WM
+
 
 # autostart application
 exec --no-startup-id diodon &
-exec --no-startup-id xrandr --output DP-0 --mode 1920x1200 --pos 0x0 --rotate normal --output DP-4 --primary --mode 1920x1200 --pos 1920x0 --rotate normal --output DP-6 --mode 1920x1200 --pos 3840x0 --rotate normal
-exec --no-startup-id udiskie -N --tray &
+exec --no-startup-id xrandr --output DP-3 --primary --mode 1920x1200 --output DP-1 --mode 1920x1200 --right-of DP-3 --output DP-2 --mode 1920x1200 --left-of DP-3
+exec --no-startup-id feh --bg-fill --no-xinerama /home/sgrc31/.config/i3/wallpaper.png
+exec --no-startup-id udiskie -n --tray &
+exec --no-startup-id dunst &
 
 
 
