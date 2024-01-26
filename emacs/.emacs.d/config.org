@@ -390,7 +390,13 @@ Or set the requirements to load only after this package
 ** Niente toolbars
 #+begin_src emacs-lisp
 (tool-bar-mode -1)
-;(scroll-bar-mode -1)
+(scroll-bar-mode -1)
+#+end_src
+
+** yascroll
+#+begin_src emacs-lisp
+(use-package yascroll)
+(global-yascroll-bar-mode 1)
 #+end_src
 
 ** Niente splash screen
