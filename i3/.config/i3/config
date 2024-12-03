@@ -237,6 +237,8 @@ exec --no-startup-id xrandr --output DP-3 --primary --mode 1920x1200 --output DP
 exec --no-startup-id feh --bg-fill --no-xinerama /home/sgrc31/.config/i3/wallpaper.png
 exec --no-startup-id udiskie -n --tray &
 exec --no-startup-id dunst &
+exec --no-startup-id setxkbmap -model pc105 -layout us -variant colemak -option  lv3:ralt_switch,ctrl:swap_lalt_lctl,compose:rctcl &
+exec --no-startup-id xset r 66 &
 
 
 
