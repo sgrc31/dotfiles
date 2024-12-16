@@ -454,3 +454,9 @@ con i vari hooks ‘after-make-frame-functions’, ‘before-make-frame-hook’,
 Trovo informazioni [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html][sul manuale]] e su [[https://emacs.stackexchange.com/questions/59791/font-and-frame-configuration-in-daemon-mode][stackoverflow]].
 
 Interessante lettura sui fonts e come usarne di diversi con diverse lingue [[http://idiocy.org/emacs-fonts-and-fontsets.html][link]]
+
+Quindi, aggiornamento del 16/12/24 (a distanza di tempo dalle ultime ricerche), pare che per sistemare il tutto bastasse il comando qui sotto, che setta il font non solo per il frame in essere, ma per tutti i successivi frame "grafici".
+Al momento funzione se faccio partire emacs grafico, faccio un M-x server-start e poi apro altri emacsclien. Funziona anche con emacs fatto partire come demone, testato su WSL. Da testare anche su un linux nativo.
+#+begin_src emacs-lisp
+(add-to-list 'default-frame-alist '(font . "Hack Nerd Font Mono-11"))
+#+end_src
