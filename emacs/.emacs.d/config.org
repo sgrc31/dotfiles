@@ -196,8 +196,8 @@ Using the forge plugin integrates magit with the most popular git forges out the
 
   (use-package treemacs
     :bind (:map global-map
-                ("C-x t t" . treemacs)
-                ("C-x t 1" . treemacs-select-window))
+                ("C-c t t" . treemacs)
+                ("C-c t 1" . treemacs-select-window))
     :custom
     (treemacs-resize-icons 15))
 
@@ -361,9 +361,10 @@ Or set the requirements to load only after this package
     :ensure t
     :init
     (setq org-roam-v2-ack t)
+    ;; Display tags while searching for notes
     (setq org-roam-node-display-template
       (concat "${title:*} "
-              (propertize "${tags:10}" 'face 'org-tag)))
+	      (propertize "${tags:20}" 'face 'org-tag)))
     :custom
     (org-roam-directory "~/org/org-roam")
     (org-roam-db-location "~/.emacs.d/org-roam.db")
