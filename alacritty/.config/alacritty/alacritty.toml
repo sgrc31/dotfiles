@@ -41,5 +41,5 @@ style = "Italic"
 family = "Hack Nerd Font Mono"
 style = "Regular"
 
-[shell]
+[terminal.shell]
 program = "/usr/bin/fish"
