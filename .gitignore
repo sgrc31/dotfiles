@@ -5,3 +5,5 @@ emacs/.emacs.d/transient/
 emacs/.emacs.d/eln-cache/
 emacs/.emacs.d/org-roam.db
 emacs/.emacs.d/.cache/
+
+fish_variables
