@@ -27,8 +27,8 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   Set up all the archive sources to pull from packages from.
 
   #+begin_src emacs-lisp
-  (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-                           ("gnu" . "http://elpa.gnu.org/packages/")))
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("gnu" . "https://elpa.gnu.org/packages/")))
 
   (package-initialize)
   #+end_src
@@ -81,6 +81,7 @@ Replace Ido (the default) with ivy completion mode, for a faster, leaner, more c
   (use-package projectile
     ;; Getting complaints about undefined variables when these are placed in
     ;; `:custom`.
+    :hook (after-init . projectile-mode)
     :config
     ;; Useful for any CMake-based project, and using `ccls` with C/C++
     (setq projectile-project-root-files-top-down-recurring
