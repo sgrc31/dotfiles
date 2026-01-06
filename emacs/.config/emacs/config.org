@@ -10,7 +10,7 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   I like to have my init.el clean, and save all the variables added by Customize in another file
   
   #+begin_src emacs-lisp
-  (setq custom-file (concat user-emacs-directory "custom.el"))
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (when (file-exists-p custom-file) (load custom-file 'noerror))
   #+end_src
 
@@ -18,6 +18,8 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
 * Package Archives
 
   All of the third-party packages we’re going to reference are available through [[https://melpa.org/][MELPA]]. This is your one stop shop for finding and installing Emacs addons. Run =M-x list-packages= to bring up an interactive searchable list. When the point is over a package line, hit =i= to mark the package for installation, then =x= to install all marked packages. If packages have updates, mark them all with `U`.
+  Added non-gnu package archive.
+  I explicitly tell emacs not to call ~package-initialize~ on its own, and wait for my line in the config. In new (27+) versions of Emacs this is redundant, but I'll keep it here.
 
   #+begin_src emacs-lisp
   (require 'package)
@@ -27,10 +29,10 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   Set up all the archive sources to pull from packages from.
 
   #+begin_src emacs-lisp
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("gnu" . "https://elpa.gnu.org/packages/")))
-
-  (package-initialize)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("gnu" . "https://elpa.gnu.org/packages/")
+			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+(package-initialize)
   #+end_src
 
 
@@ -39,77 +41,57 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
   The primary tool we use to configure our Emacs packages, aptly called [[https://jwiegley.github.io/use-package/][use-package]], automatically downloads packages from a package source, speeds up startup by deferring package loading until necessary, and helps keep your configuration tidy by providing a place to combine package-specific settings and other mode and action hooks.
 
   #+begin_src emacs-lisp
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
 
-  (eval-when-compile
-    (require 'use-package))
+    (eval-when-compile
+      (require 'use-package))
 
-  ;; Yes, it's a bit meta...
-  (use-package use-package
-    :config
-    (setq-default use-package-always-defer t
-                  use-package-always-demand nil
-                  use-package-always-ensure t
-                  use-package-verbose t))
+    ;; Yes, it's a bit meta...
+    (use-package use-package
+      :config
+      (setq-default use-package-always-defer t
+                    use-package-always-demand nil
+                    use-package-always-ensure t
+                    use-package-verbose t))
 
-  (setq-default byte-compile-warnings nil)
+    (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+
+    (setq use-package-compute-statistics t)  ;; Then run M-x use-package-report
   #+end_src
 
 
-* Ivy
-Replace Ido (the default) with ivy completion mode, for a faster, leaner, more customizable alternative
+* Ivy, Counsel, and Swiper
+Replace the default completion with Ivy, a faster, leaner, more customizable alternative. Counsel provides Ivy-powered versions of common Emacs commands, and Swiper provides an Ivy-powered search interface. Marginalia is used instead of Ivy-rich for completion candidates.
+
+The ivy ecosystem is stable and battle tested, in future I might want to explore the Vertico+Consult+Orderless+Marginalia combo.
 
 #+begin_src emacs-lisp
 (use-package ivy
   :demand
   :config
-  (ivy-mode 1))
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t      ; Show recent files in switch-buffer
+        ivy-count-format "(%d/%d) "     ; Show current/total in prompt
+        ivy-wrap t))                     ; Wrap around at end of list
+
+(use-package counsel
+  :demand
+  :after ivy
+  :config
+  (counsel-mode 1))
+
+(use-package swiper
+  :after ivy
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper-backward)))
+
+(use-package marginalia
+  :demand
+  :config
+  (marginalia-mode 1))
 #+end_src
-
-
-* Projects
-
-  - https://github.com/bbatsov/projectile
-  - https://www.projectile.mx/en/latest/
-
-  Projectile gives Emacs project management features, such as navigating files, finding occurences of a string, running build commands and more.
-  It detects project folders through version control (git, svn, ...) and you can optionally give a default project folder path within the config.
-
-  #+begin_src emacs-lisp
-  (use-package projectile
-    ;; Getting complaints about undefined variables when these are placed in
-    ;; `:custom`.
-    :hook (after-init . projectile-mode)
-    :config
-    ;; Useful for any CMake-based project, and using `ccls` with C/C++
-    (setq projectile-project-root-files-top-down-recurring
-     (append
-      '("compile_commands.json" ".ccls")
-      projectile-project-root-files-top-down-recurring))
-    (setq projectile-globally-ignored-directories
-     (append
-      '("build" "CMakeFiles" ".ccls-cache")
-      projectile-globally-ignored-directories))
-    (setq projectile-globally-ignored-files
-     (append
-      '("cmake_install.cmake")
-      projectile-globally-ignored-files))
-    (setq projectile-completion-system 'ivy)
-    :custom
-    (projectile-project-search-path '("~/lab/"))
-    (projectile-enable-caching t)
-    (projectile-require-project-root t)
-    (projectile-sort-order 'access-time)
-    :init
-    (projectile-mode))
-  #+end_src
-
-
-** Customizations
-- added default project search path
-- added integration with Ivy
 
 
 * Magit
@@ -117,12 +99,23 @@ Replace Ido (the default) with ivy completion mode, for a faster, leaner, more c
   [[https://github.com/magit/magit][Magit]] is a Git interface, just like you have in many IDEs and text editors, but combining that with all the power of using Git from the command line.
 
   #+begin_src emacs-lisp
-  (use-package magit)
+  (use-package magit
+    :bind (("C-x g" . magit-status)
+           ("C-x M-g" . magit-dispatch)
+           ("C-c M-g" . magit-file-dispatch))
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+    (magit-diff-refine-hunk t))  ; Show word-level differences in current hunk
   #+end_src
 
 
 ** TODO Forges integration
 Using the forge plugin integrates magit with the most popular git forges out there (such as Github, Gitlab and so on). It might be worth using it.
+
+
+** TODO Add git-timechine
+
+** TODO Add magit-todos, maybe
 
 
 * Key bindings
@@ -131,8 +124,15 @@ Using the forge plugin integrates magit with the most popular git forges out the
 
   #+BEGIN_SRC emacs-lisp
   (use-package which-key
-    :init
-    (which-key-mode))
+    :demand
+    :config
+    (which-key-mode)
+    (setq which-key-idle-delay 0.5              ; Show faster (default is 1.0)
+          which-key-sort-order 'which-key-key-order-alpha
+          which-key-min-display-lines 3
+          which-key-max-display-columns nil     ; Use full frame width
+          which-key-popup-type 'side-window
+          which-key-side-window-location 'bottom))
   #+END_SRC
 
 
@@ -142,20 +142,29 @@ Using the forge plugin integrates magit with the most popular git forges out the
   - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Flymake.html][flymake]]
   - [[https://www.flycheck.org/en/latest/][flycheck]]
   A detailed comparison is at https://www.flycheck.org/en/latest/user/flycheck-versus-flymake.html. We choose to use flycheck due to the sheer number of extensions written for it; pick your favorite language linter, and there’s probably a flycheck extension for it. Note that [[https://www.flycheck.org/en/latest/user/installation.html#windows-support][Windows isn't supported]].
+  We might want to note that Flymake improved a lot with recent editions of emacs. Might be useful to check it in the future.
 
   #+BEGIN_SRC emacs-lisp
-      (use-package flycheck
-	:hook (after-init . global-flycheck-mode)
-	:custom
-	(setq flycheck-check-syntax-automatically '(mode-enabled save)))
+    (use-package flycheck
+      :hook (after-init . global-flycheck-mode)
+      :custom
+      (flycheck-check-syntax-automatically '(mode-enabled save))
+      (flycheck-display-errors-delay 0.3)
+      (flycheck-indication-mode 'left-fringe)  ; Show indicators in left margin
+      (flycheck-highlighting-mode 'lines))     ; Highlight entire error lines
   #+END_SRC
+
+
 * Documentation
-
   When the point is overlapping with a function call, eldoc shows the function arguments in the echo area.
-
+  
   #+BEGIN_SRC emacs-lisp
   (use-package eldoc
-    :hook (after-init . global-eldoc-mode))
+    :ensure nil  ; Built-in package
+    :custom
+    (eldoc-idle-delay 0.3)                       ; Show docs faster (default 0.5)
+    (eldoc-echo-area-use-multiline-p nil)        ; Keep to one line for cleaner display
+    (eldoc-echo-area-prefer-doc-buffer t))       ; Use *eldoc* buffer for long docs
   #+END_SRC
 
 
@@ -164,93 +173,118 @@ Using the forge plugin integrates magit with the most popular git forges out the
   [[https://microsoft.github.io/language-server-protocol][LSP]] is a protocol used to implement IDE-like features in an editor-agnostic manner. This package will give us a uniform way to add features such as semantic highlighting, auto-completion, jump-to-definition, and so on.
 
   #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :commands lsp
-    :custom
-    (lsp-auto-guess-root t)
-    (lsp-log-io t)
-    (lsp-prefer-flymake nil)
-    (lsp-enable-snippet t))
+    (use-package lsp-mode
+      :commands (lsp lsp-deferred)
+      :custom
+      (lsp-keymap-prefix "C-c l")
+      (lsp-log-io t)                      ; Disable for performance
+      (lsp-enable-snippet t)
+      (lsp-completion-provider :none)       ; We'll use company
+      (lsp-headerline-breadcrumb-enable nil)
+      (lsp-lens-enable nil)
+      :config
+      (setq read-process-output-max (* 1024 1024)))  ; 1MB for better performance
   #+END_SRC
 
   This package enhances the user interface, providing pop-up windows with documentation and visual indicators.
 
   #+BEGIN_SRC emacs-lisp
-      (use-package lsp-ui
-	:hook (lsp-mode . lsp-ui-mode)
-	:custom
-	(lsp-ui-doc-delay 1.0)
-	(lsp-ui-doc-include-signature t)
-	(lsp-ui-flycheck-enable t)
-	(lsp-ui-peek-always-show t)
-	(lsp-ui-sideline-diagnostic-max-lines 2))
+    (use-package lsp-ui
+      :hook (lsp-mode . lsp-ui-mode)
+      :custom
+      (lsp-ui-doc-enable t)
+      (lsp-ui-doc-delay 0.5)
+      (lsp-ui-doc-position 'at-point)
+      (lsp-ui-doc-include-signature t)
+      (lsp-ui-sideline-enable t)
+      (lsp-ui-sideline-show-hover nil)
+      (lsp-ui-sideline-diagnostic-max-lines 3))
   #+END_SRC
 
   Analogous to LSP is the [[https://microsoft.github.io/debug-adapter-protocol/][debug adapter protocol]]. We use [[https://github.com/emacs-lsp/lsp-treemacs][treemacs]] for IDE-like display of errors.
 
   #+BEGIN_SRC emacs-lisp
-  (use-package dap-mode
-    :after lsp-mode
-    :config
-    (dap-mode t)
-    (dap-ui-mode t))
+    (use-package dap-mode
+      :after lsp-mode
+      :config
+      (dap-mode t)
+      (dap-ui-mode 1)
+      (require 'dap-python)) ; Enable Python debugging
+  #+END_SRC 
 
-  (use-package treemacs
-    :bind (:map global-map
-                ("C-c t t" . treemacs)
-                ("C-c t 1" . treemacs-select-window))
-    :custom
-    (treemacs-resize-icons 15))
+  #+BEGIN_SRC emacs-lisp
+    (use-package treemacs
+      :bind (("C-c t t" . treemacs)
+             ("C-c t 1" . treemacs-select-window))
+      :custom
+      (treemacs-width 30)
+      (treemacs-resize-icons 15))
 
-  (use-package lsp-treemacs
-    :init
-    (lsp-treemacs-sync-mode 1))
+    (use-package lsp-treemacs
+      :after (lsp-mode treemacs)
+      :config
+      (lsp-treemacs-sync-mode 1))
   #+END_SRC
 
 * Python
 
-   Unfortunately the Python package situation is a little confusing. There are a few older separate packages that provide a Python major mode, but we prefer the built-in one and avoid downloading a third-party one by not ensuring it. This allows us to have =use-package= configure Python mode without downloading anything.
+Unfortunately the Python package situation is a little confusing. There are a few older separate packages that provide a Python major mode, but we prefer the built-in one and avoid downloading a third-party one by not ensuring it. This allows us to have =use-package= configure Python mode without downloading anything.
 
-   #+BEGIN_SRC emacs-lisp
-   (use-package python
-     :ensure nil
-     :hook (python-mode . lsp)
-     :custom
-     (python-indent-guess-indent-offset-verbose nil)
-     (python-fill-docstring-style 'pep-257-nn))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package python
+    :ensure nil
+    :hook (python-mode . lsp-deferred)
+    :custom
+    (python-indent-guess-indent-offset-verbose nil)
+    (python-fill-docstring-style 'pep-257-nn))
+#+END_SRC
 
-
-** Virtual environments
-   test pyvenv
-   #+begin_src emacs-lisp
-   (use-package pyvenv
+** BasedPyRight
+Use BasedPyRight (pyright without npm baggage) as a general-purpose pyhon language server.
+The package itself is globally installed used uv
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-pyright
   :ensure t
-  :config
-  (pyvenv-mode 1))
+  :custom (lsp-pyright-langserver-command "basedpyright") ;; or basedpyright
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))  ; or lsp-deferred
+#+END_SRC
+   
+
+* Virtual environments
+test pyvenv
+   #+begin_src emacs-lisp
+     (use-package pyvenv
+       :config
+       (pyvenv-mode 1))
    #+end_src
 
 * Code completion
-
-  Company is the primary package that is used for code completion, it follows a frontend/backend system. The package =company= is the frontend, it will query a certain backend based on what code you are editing, such as one provided by an active language server.
+Company is the primary package that is used for code completion, it follows a frontend/backend system. The package =company= is the frontend, it will query a certain backend based on what code you are editing, such as one provided by an active language server.
 
   #+BEGIN_SRC emacs-lisp
     (use-package company
       :hook (after-init . global-company-mode)
-      :config
-      (setq lsp-completion-provider :capf)
+      :bind (:map company-active-map
+                  ("C-n" . company-select-next)
+                  ("C-p" . company-select-previous)
+                  ("<tab>" . company-complete-selection))
       :custom
       (company-minimum-prefix-length 1)
-      (company-idle-delay 0.3)
-      (company-tooltip-align-annotations t))
+      (company-idle-delay 0.2)              ; Faster completion popup
+      (company-tooltip-align-annotations t)
+      (company-require-match nil)           ; Allow free typing
+      (company-selection-wrap-around t)     ; Wrap around at end of candidates
+      (company-backends '(company-capf)))   ; Use completion-at-point-functions (LSP)
   #+END_SRC
 
 * Dart / Flutter
-  Configurazione per dart e Flutter, scritta da me un po' a cazzo di cane
+Configurazione per dart e Flutter, scritta da me un po' a cazzo di cane
    #+BEGIN_SRC emacs-lisp
      (use-package dart-mode
        :ensure t
-       :hook (dart-mode . lsp))
+       :hook (dart-mode . lsp-deferred))
    #+END_SRC
    
 
@@ -261,19 +295,18 @@ Using the forge plugin integrates magit with the most popular git forges out the
   :config
   (yas-global-mode 1))
 #+end_src
+
+
 * Ace window
-Ace window provide a quick way to select wich buffer to edit. I chose to override the standard C-x o keybind and switched the standard select keys to Colemak's homerow.
+Ace window provide a quick way to select which buffer to edit. I chose to override the standard C-x o keybind and switched the standard select keys to Colemak's homerow.
 #+begin_src emacs-lisp
-(use-package ace-window
-  :ensure t
-  :config (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o ?h))
-  :bind ("C-x o" . ace-window)
-)
+  (use-package ace-window
+    :bind ("C-x o" . ace-window)
+    :custom
+    (aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o ?h))  ; Colemak homerow
+    (aw-scope 'global)                         ; All frames across all monitors
+    (aw-background t))                         ; Dim other windows for focus
 #+end_src
-
-
-** TODO Change keybins using :bind and :map
-As done in other packages (avy, treemacs)
 
 
 * Avy
@@ -286,14 +319,23 @@ Avy is a great tool to move faster inside a buffer
 
 
 * PDF
+PDF-tools provides a superior PDF viewing experience in Emacs with features like annotations, text search, and smooth scrolling.
 #+begin_src emacs-lisp
-(use-package pdf-tools
-  :ensure t
-  :mode ("\\.pdf\\'" . pdf-view-mode)
-  :config
-  (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page)
-  (setq pdf-annot-activate-created-annotations t))
+  (use-package pdf-tools
+    :mode ("\\.pdf\\'" . pdf-view-mode)
+    :config
+    (pdf-tools-install :no-query)  ; Don't ask for confirmation
+    :bind (:map pdf-view-mode-map
+              ("C-s" . isearch-forward)
+              ("C-r" . isearch-backward)
+              ("n" . pdf-view-next-line-or-next-page)
+              ("e" . pdf-view-previous-line-or-previous-page))
+    :custom
+    (pdf-view-display-size 'fit-page)
+    (pdf-annot-activate-created-annotations t)
+    (pdf-view-resize-factor 1.1)   ; Resize by 10% each time
+    (pdf-view-use-scaling t)       ; Better quality on high-DPI displays
+    (pdf-view-use-imagemagick nil)) ; Use native rendering (faster)
 #+end_src
 
 * Expand region
@@ -305,7 +347,7 @@ Avy is a great tool to move faster inside a buffer
 #+end_src
 
 * All the icon
-Required by Doom theme and modeline
+Provides icon fonts used by Doom themes and modeline. Note: After first install, run M-x all-the-icons-install-fonts to download the required fonts.
 #+begin_src emacs-lisp
 (use-package all-the-icons)
 #+end_src
@@ -317,148 +359,153 @@ Or set the requirements to load only after this package
 
 * Doom theme
 #+begin_src emacs-lisp
-(use-package doom-themes
-  :demand 
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
+  (use-package doom-themes
+    :demand
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-one t)
 
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ;;(doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
-  (doom-themes-treemacs-config)
-  
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    ;;(doom-themes-neotree-config)
+    ;; or for treemacs users
+    (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+    (doom-themes-treemacs-config)
+    
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
 #+end_src
 
 
 * Doom modeline
 #+begin_src emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+  (use-package doom-modeline
+    :demand
+    :hook (after-init . doom-modeline-mode)
+    :custom
+    (doom-modeline-height 25)
+    (doom-modeline-bar-width 3)
+    (doom-modeline-icon t)
+    (doom-modeline-major-mode-icon t)
+    (doom-modeline-major-mode-color-icon t)
+    (doom-modeline-buffer-file-name-style 'truncate-upto-project)
+    (doom-modeline-minor-modes nil))  ; Hide minor modes for cleaner look
 #+end_src
 
 
 * Org mode
-  Just something basic, straight outta the org manual, but in use-package syntax
+Basic Org mode configuration with common keybindings for capture, links, and agenda.
 #+begin_src emacs-lisp
-(use-package org
-  :bind (("C-c c" . 'org-capture)
-         ("C-c l" . 'org-store-link)
-         ("C-c a" . 'org-agenda)))
+  (use-package org
+    :ensure nil  ; Built-in package
+    :bind (("C-c c" . org-capture)
+           ("C-c l" . org-store-link)
+           ("C-c a" . org-agenda))
+    :custom
+    (org-startup-indented t)              ; Clean indented view
+    (org-hide-emphasis-markers t)         ; Hide markup characters
+    (org-pretty-entities t)               ; Show UTF-8 characters
+    (org-log-done 'time)                  ; Timestamp when tasks are done
+    (org-return-follows-link t)           ; RET follows links
+    (org-src-tab-acts-natively t)         ; Tab in src blocks uses mode indent
+    (org-src-preserve-indentation t)      ; Preserve indentation in src blocks
+    (org-edit-src-content-indentation 0)) ; No extra indent in src edit buffer
 #+end_src
 
 * Org Roam
+A note-taking system built on top of Org mode, implementing a Zettelkasten-style approach with backlinks.
 #+begin_src emacs-lisp
   (use-package org-roam
-    :ensure t
+    :demand  ; Load immediately since we use it frequently
     :init
     (setq org-roam-v2-ack t)
-    ;; Display tags while searching for notes
-    (setq org-roam-node-display-template
-      (concat "${title:*} "
-	      (propertize "${tags:20}" 'face 'org-tag)))
     :custom
-    (org-roam-directory "~/org/org-roam")
-    (org-roam-db-location "~/.emacs.d/org-roam.db")
-    (org-roam-complete-link-at-point t)
+    (org-roam-directory (expand-file-name "~/org/org-roam"))
+    (org-roam-db-location (expand-file-name "~/.config/emacs/org-roam.db"))
+    (org-roam-complete-everywhere t)      ; Completion in all org buffers
+    (org-roam-node-display-template
+     (concat "${title:*} "
+             (propertize "${tags:20}" 'face 'org-tag)))
+    ;graph visualization settings
+    (org-roam-graph-extra-config '(("rankdir" . "UD")     ; Top to bottom layout
+                                  ("ranksep" . "1.0")    ; Vertical spacing
+                                  ("nodesep" . "0.5")    ; Horizontal spacing
+                                  ("overlap" . "false")))
+                                  ;("splines" . "ortho"))) ; Orthogonal edges
     :bind (("C-c n l" . org-roam-buffer-toggle)
-	   ("C-c n f" . org-roam-node-find)
-	   ("C-c n i" . org-roam-node-insert)
-	   :map org-roam-dailies-map
-	   ("Y" . org-roam-dailies-capture-yesterday)
-	   ("T" . org-roam-dailies-capture-tomorrow))
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n g" . org-roam-graph)
+           ("C-c n c" . org-roam-capture)
+           :map org-roam-dailies-map
+           ("Y" . org-roam-dailies-capture-yesterday)
+           ("T" . org-roam-dailies-capture-tomorrow))
     :bind-keymap
     ("C-c n d" . org-roam-dailies-map)
     :config
     (require 'org-roam-dailies)
-    (org-roam-setup))
+    (org-roam-db-autosync-mode))  ; Auto-sync database
 #+end_src
 
 * Misc
 ** Tramp
+Remote file editing via SSH.
+
 #+BEGIN_SRC emacs-lisp
-(setq tramp-default-method "ssh")
+(use-package tramp
+  :ensure nil
+  :custom
+  (tramp-default-method "ssh"))
 #+END_SRC
 
-** Niente toolbars
+** Disable GUI elemets
+Remove unnecessary GUI clutter for a cleaner interface.
+
 #+begin_src emacs-lisp
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+;(menu-bar-mode -1)  ; Consider adding this too
 #+end_src
 
 ** yascroll
+Yet Another Scroll bar - a customizable scroll bar overlay.
 #+begin_src emacs-lisp
-(use-package yascroll)
-(global-yascroll-bar-mode 1)
+(use-package yascroll
+  :config
+  (global-yascroll-bar-mode 1))
 #+end_src
 
-** Niente splash screen
+** Disable splash screen
+Jump straight to scratch buffer on startup.
+
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-screen t)
+(setq inhibit-startup-screen t
+      inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
 #+END_SRC
 
 ** Time and date in modeline
+Display current time and date in the modeline.
+
 #+begin_src emacs-lisp
-(setq display-time-day-and-date t)
-(setq display-time-24hr-format t)
-(setq display-time-format "%H:%M %d/%m/%y")
-(setq display-time-default-load-average nil)
+(setq display-time-day-and-date t
+      display-time-24hr-format t
+      display-time-format "%H:%M %d/%m/%y"
+      display-time-default-load-average nil)
 (display-time-mode 1)
 #+end_src
 
 ** Font
+Set default font for all frames, including emacsclient sessions.
+
 #+begin_src emacs-lisp
-;;Questo primo comando si applica solo per i frame già esistenti.
-;;Se provo a metterlo nell'init e lancio emacs come demone, quando apro il client
-;;ottengo frames con caratteri minuscoli
-;;(set-frame-font "Hack Nerd Font Mono:pixelsize=15:foundry=SRC:weight=normal:slant=normal:width=normal:spacing=100:scalable=true" nil t)
-
-;;quindi in giro ho trovato questo primo suggerimento, da questo link:
-;;https://emacs.stackexchange.com/questions/52063/emacsclient-gui-has-small-fonts
-;;ma non va, perché la variabile default-frame-list è vuota al momento della valutazione
-;;(add-to-list 'default-frame-list '(font . "Hack Nerd Font Mono:pixelsize=15:foundry=SRC:weight=normal:slant=normal:width=normal:spacing=100:scalable=true"))
-
-;;provo questo, da:
-;;https://emacs.stackexchange.com/questions/35820/opening-emacsclient-n-c-opens-a-small-frame-with-small-fonts
-;;(setq default-frame-alist '(font . "Hack Nerd Font Mono:pixelsize=15:foundry=SRC:weight=normal:slant=normal:width=normal:spacing=100:scalable=true")
-;; però non va.
-
-;;leggendo meglio questo scambio:
-;;https://emacs.stackexchange.com/questions/59791/font-and-frame-configuration-in-daemon-mode
-;; mi pare di capire che la soluzione sia nell'ultimo hook server-after-make-frame-hook
-;; ma la cosa non verrebbe eseguita nelle sessioni stand alone GUI di emacs. Insomma, mi
-;; serve più emacs-fu. Per il momento mi limito a settare il tutto a mano ogni 
-;;volta che apro il client, con il primo comando qui testato.
-#+end_src
-
-Questo comando funziona che è una meraviglia, ma non se lancio emacs da demone
-#+begin_src emacs-lisp
-(set-frame-font "Hack Nerd Font Mono-11")
-#+end_src
-
-Anche questo sembra andare, sempre non se lancio da demone, ma pare sia una sintassi più vecchia e non più consigliata
-#+begin_src emacs-lisp
-;(set-face-attribute 'default nil :font "Hack Nerd Font Mono" :height 110)
-#+end_src
-
-Il tutto sembra succedere semplicemente perché entrambi i comandi hanno bisogno di un frame attivato per poter lavorare, e il demone non ne crea.
-La soluzione sembra essere quella di lanciarli in una funzione attivata alla prima creazione di un frame,
-con i vari hooks ‘after-make-frame-functions’, ‘before-make-frame-hook’, ‘server-after-make-frame-hook’.
-Trovo informazioni [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html][sul manuale]] e su [[https://emacs.stackexchange.com/questions/59791/font-and-frame-configuration-in-daemon-mode][stackoverflow]].
-
-Interessante lettura sui fonts e come usarne di diversi con diverse lingue [[http://idiocy.org/emacs-fonts-and-fontsets.html][link]]
-
-Quindi, aggiornamento del 16/12/24 (a distanza di tempo dalle ultime ricerche), pare che per sistemare il tutto bastasse il comando qui sotto, che setta il font non solo per il frame in essere, ma per tutti i successivi frame "grafici".
-Al momento funzione se faccio partire emacs grafico, faccio un M-x server-start e poi apro altri emacsclien. Funziona anche con emacs fatto partire come demone, testato su WSL. Da testare anche su un linux nativo.
-#+begin_src emacs-lisp
+;; This works for both standalone Emacs and daemon/client mode
 (add-to-list 'default-frame-alist '(font . "Hack Nerd Font Mono-11"))
+
+;; Ensure font is set for existing frame (when not using daemon)
+(set-frame-font "Hack Nerd Font Mono-11" nil t)
 #+end_src
