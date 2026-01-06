@@ -2,7 +2,7 @@
 	name = Simone Guercio
 	email = s.guercio@gmail.com
 [core]
-	editor = emacsclient -nw
+	editor = emacsclient -nw -a ''
 [pull]
 	rebase = false
 [init]
