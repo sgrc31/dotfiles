@@ -32,6 +32,10 @@ Second attempt at a literate emacs configuration. The core parts are taken from 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ("gnu" . "https://elpa.gnu.org/packages/")
 			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+
+;; I have a temporary key problem with the nongnu archive, gonna temporary disable the whole archive
+(setf package-archives (assoc-delete-all "nongnu" package-archives))
+
 (package-initialize)
   #+end_src
 
