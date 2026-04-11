@@ -508,3 +508,8 @@ Set default font for all frames, including emacsclient sessions.
 ;; Ensure font is set for existing frame (when not using daemon)
 (set-frame-font "Hack Nerd Font Mono-11" nil t)
 #+end_src
+
+** Line numbers
+#+begin_src emacs-lisp
+(global-display-line-numbers-mode 1)
+#+end_src
