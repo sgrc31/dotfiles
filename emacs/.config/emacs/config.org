@@ -237,24 +237,19 @@ Unfortunately the Python package situation is a little confusing. There are a fe
 #+BEGIN_SRC emacs-lisp
   (use-package python
     :ensure nil
-    :hook (python-mode . lsp-deferred)
     :custom
     (python-indent-guess-indent-offset-verbose nil)
     (python-fill-docstring-style 'pep-257-nn))
 #+END_SRC
 
-** BasedPyRight
-Use BasedPyRight (pyright without npm baggage) as a general-purpose pyhon language server.
-The package itself is globally installed used uv
+** TY language server
+Use ty as the sole Python LSP server, explicitly blocking other registered servers.
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-pyright
-  :ensure t
-  :custom (lsp-pyright-langserver-command "basedpyright") ;; or basedpyright
+(use-package lsp-mode
   :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred))))  ; or lsp-deferred
+                         (setq-local lsp-enabled-clients '(ty-ls))
+                         (lsp-deferred))))
 #+END_SRC
-   
 
 * Virtual environments
 test pyvenv
