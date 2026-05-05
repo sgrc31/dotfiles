@@ -131,7 +131,7 @@ Using the forge plugin integrates magit with the most popular git forges out the
     :demand
     :config
     (which-key-mode)
-    (setq which-key-idle-delay 0.5              ; Show faster (default is 1.0)
+    (setq which-key-idle-delay 0.3              ; Show faster (default is 1.0)
           which-key-sort-order 'which-key-key-order-alpha
           which-key-min-display-lines 3
           which-key-max-display-columns nil     ; Use full frame width
@@ -512,4 +512,8 @@ Set default font for all frames, including emacsclient sessions.
 ** Line numbers
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode 1)
+;; Disable them in pdf-view-mode
+(add-hook 'pdf-view-mode-hook
+          (lambda ()
+            (display-line-numbers-mode -1)))
 #+end_src
